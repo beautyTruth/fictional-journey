@@ -208,6 +208,9 @@ let tileSize = canvasEl.width / tileCount;
 
 document.addEventListener("keydown", keyDown);
 
+// the EAT SNACK sound effect
+const eatSnack = new Audio("eat.wav");
+
 // the SNAKE BODY PARTS array
 
 const snakeBooty = [];
@@ -216,12 +219,74 @@ const snakeBooty = [];
 
 function playGame() {
   changeSnakePosition();
+
+  // GAME OVER
+
+  let result = gameOver();
+  if (result) {
+    return;
+  }
+
   clearScreen();
   snackCollisionDetection();
   drawSnack();
   drawSnake();
+  drawScore();
 
   setTimeout(playGame, 1000 / speed);
+}
+
+// ----- the GAME OVER function
+function gameOver() {
+  let gameOver = false;
+
+  if (xV === 0 && yV === 0) return false;
+
+  // check for the wall collision
+
+  if (
+    snakeHeadX < 0 ||
+    snakeHeadX === tileCount ||
+    snakeHeadY === tileCount ||
+    snakeHeadY < 0
+  ) {
+    gameOver = true;
+  }
+
+  // if (snakeHeadX < 0) {
+  //   gameOver = true;
+  // } else if (snakeHeadX === tileCount) {
+  //   gameOver = true;
+  // } else if (snakeHeadY === tileCount) {
+  //   gameOver = true;
+  // } else if (snakeHeadY < 0) {
+  //   gameOver = true;
+  // }
+
+  // check for the snake booty collision
+  for (let i = 0; i < snakeBooty.length; i++) {
+    let part = snakeBooty[i];
+    if (part.x === snakeHeadX && part.y === snakeHeadY) {
+      gameOver = true;
+      break;
+    }
+  }
+
+  if (gameOver) {
+    CTX.fillStyle = "antiquewhite";
+    CTX.font = "50px sans-serif";
+    CTX.fillText("YOU SUCK 🐍", canvasEl.width / 9.3, canvasEl.height / 2);
+  }
+
+  return gameOver;
+}
+
+// ----- the DRAW SCORE function
+
+function drawScore() {
+  CTX.fillStyle = "antiquewhite";
+  CTX.font = "15px sans-serif";
+  CTX.fillText(`Score: ${score}`, 20, 20);
 }
 
 // ----- the CLEAR SCREEN function
@@ -273,6 +338,10 @@ function snackCollisionDetection() {
   if (snackX === snakeHeadX && snackY === snakeHeadY) {
     snackX = Math.floor(Math.random() * tileCount);
     snackY = Math.floor(Math.random() * tileCount);
+    snakeTailLength++;
+    score++;
+    speed++;
+    eatSnack.play();
   }
 }
 
