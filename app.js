@@ -208,11 +208,17 @@ let tileSize = canvasEl.width / tileCount;
 
 document.addEventListener("keydown", keyDown);
 
+// the SNAKE BODY PARTS array
+
+const snakeBooty = [];
+
 // -=-=-=-=-=-=-=-=-=-=-=-=-=- GAME LOOP -=-=-=-=-=-=-=-=-=-=-=-=-=- //
 
 function playGame() {
   changeSnakePosition();
   clearScreen();
+  snackCollisionDetection();
+  drawSnack();
   drawSnake();
 
   setTimeout(playGame, 1000 / speed);
@@ -227,6 +233,17 @@ function clearScreen() {
 
 // ----- the DRAW SNAKE function
 function drawSnake() {
+  CTX.fillStyle = "#E75480";
+  for (let i = 0; i < snakeBooty.length; i++) {
+    let part = snakeBooty[i];
+    CTX.fillRect(part.x * tileCount, part.y * tileCount, tileSize, tileSize);
+  }
+
+  snakeBooty.push(new SnakeTail(snakeHeadX, snakeHeadY));
+  if (snakeBooty.length > snakeTailLength) {
+    snakeBooty.shift();
+  }
+
   CTX.fillStyle = "black";
   CTX.fillRect(
     snakeHeadX * tileCount,
@@ -241,6 +258,22 @@ function drawSnake() {
 function changeSnakePosition() {
   snakeHeadX = snakeHeadX + xV;
   snakeHeadY = snakeHeadY + yV;
+}
+
+// ----- the DRAW SNACK function
+
+function drawSnack() {
+  CTX.fillStyle = "fuchsia";
+  CTX.fillRect(snackX * tileCount, snackY * tileCount, tileSize, tileSize);
+}
+
+// ----- the SNACK COLLISION DETECTION function
+
+function snackCollisionDetection() {
+  if (snackX === snakeHeadX && snackY === snakeHeadY) {
+    snackX = Math.floor(Math.random() * tileCount);
+    snackY = Math.floor(Math.random() * tileCount);
+  }
 }
 
 // ----- the KEY DOWN function
@@ -272,6 +305,14 @@ function keyDown(e) {
     if (xV === -1) return;
     yV = 0;
     xV = 1;
+  }
+}
+
+// -=-=-=-=-=- the SNAKE BODY class -=-=-=-=-=-
+class SnakeTail {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
   }
 }
 
