@@ -204,10 +204,17 @@ let score = 0;
 // derived dimensions
 let tileSize = canvasEl.width / tileCount;
 
+// the arrow keys' EVENT LISTENER
+
+document.addEventListener("keydown", keyDown);
+
 // -=-=-=-=-=-=-=-=-=-=-=-=-=- GAME LOOP -=-=-=-=-=-=-=-=-=-=-=-=-=- //
 
 function playGame() {
+  changeSnakePosition();
   clearScreen();
+  drawSnake();
+
   setTimeout(playGame, 1000 / speed);
 }
 
@@ -216,6 +223,56 @@ function playGame() {
 function clearScreen() {
   CTX.fillStyle = "maroon";
   CTX.fillRect(0, 0, canvasEl.width, canvasEl.height);
+}
+
+// ----- the DRAW SNAKE function
+function drawSnake() {
+  CTX.fillStyle = "black";
+  CTX.fillRect(
+    snakeHeadX * tileCount,
+    snakeHeadY * tileCount,
+    tileSize,
+    tileSize
+  );
+}
+
+// ----- the CHANGE SNAKE POSITION function
+
+function changeSnakePosition() {
+  snakeHeadX = snakeHeadX + xV;
+  snakeHeadY = snakeHeadY + yV;
+}
+
+// ----- the KEY DOWN function
+
+function keyDown(e) {
+  // move up
+  if (e.keyCode === 38) {
+    if (yV === 1) return;
+    yV = -1;
+    xV = 0;
+  }
+
+  // move down
+  if (e.keyCode === 40) {
+    if (yV === -1) return;
+    yV = 1;
+    xV = 0;
+  }
+
+  // move left
+  if (e.keyCode === 37) {
+    if (xV === 1) return;
+    yV = 0;
+    xV = -1;
+  }
+
+  // move right
+  if (e.keyCode === 39) {
+    if (xV === -1) return;
+    yV = 0;
+    xV = 1;
+  }
 }
 
 playGame();
